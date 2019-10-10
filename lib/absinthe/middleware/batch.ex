@@ -69,6 +69,8 @@ defmodule Absinthe.Middleware.Batch do
   @behaviour Absinthe.Middleware
   @behaviour Absinthe.Plugin
 
+  @task_module Application.get_env(:absinthe, :task_module, Task)
+
   @typedoc """
   The function to be called with the aggregate batch information.
 
@@ -143,13 +145,13 @@ defmodule Absinthe.Middleware.Batch do
     |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
     |> Enum.map(fn {{batch_fun, batch_opts}, batch_data} ->
       {batch_opts,
-       Task.async(fn ->
+       @task_module.async(fn ->
          {batch_fun, call_batch_fun(batch_fun, batch_data)}
        end)}
     end)
     |> Map.new(fn {batch_opts, task} ->
       timeout = Keyword.get(batch_opts, :timeout, 5_000)
-      Task.await(task, timeout)
+      @task_module.await(task, timeout)
     end)
   end
 

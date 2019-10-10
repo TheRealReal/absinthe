@@ -38,6 +38,8 @@ defmodule Absinthe.Middleware.Async do
   @behaviour Absinthe.Middleware
   @behaviour Absinthe.Plugin
 
+  @task_module Application.get_env(:absinthe, :task_module, Task)
+
   # A function has handed resolution off to this middleware. The first argument
   # is the current resolution struct. The second argument is the function to
   # execute asynchronously, and opts we'll want to use when it is time to await
@@ -51,7 +53,7 @@ defmodule Absinthe.Middleware.Async do
   # stack for this field. On the next resolution pass, we need to `Task.await` the
   # task so we have actual data. Thus, we prepend this module to the middleware stack.
   def call(%{state: :unresolved} = res, {fun, opts}) do
-    task_data = {Task.async(fun), opts}
+    task_data = {@task_module.async(fun), opts}
 
     %{
       res
@@ -72,7 +74,7 @@ defmodule Absinthe.Middleware.Async do
   # the state to `:resolved`, and if it is another middleware tuple it will
   # set the state to unresolved.
   def call(%{state: :suspended} = res, {task, opts}) do
-    result = Task.await(task, opts[:timeout] || 30_000)
+    result = @task_module.await(task, opts[:timeout] || 30_000)
 
     res
     |> Absinthe.Resolution.put_result(result)
