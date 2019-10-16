@@ -58,11 +58,12 @@ defmodule Absinthe.Mixfile do
   defp elixirc_paths(_), do: ["lib"]
 
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :telemetry]]
   end
 
   defp deps do
     [
+      {:telemetry, "~> 0.3.0"},
       {:dataloader, "~> 1.0.0", optional: true},
       {:ex_doc, "0.19.0-rc", only: :dev},
       {:benchfella, "~> 0.3.0", only: :dev},

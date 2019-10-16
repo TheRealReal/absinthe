@@ -271,7 +271,16 @@ defmodule Absinthe.Pipeline do
   def run_phase([phase_config | todo], input, done) do
     {phase, options} = phase_invocation(phase_config)
 
-    case phase.run(input, options) do
+    id = :erlang.unique_integer()
+    start_time = System.system_time(:nanosecond)
+
+    :telemetry.execute([:absinthe, :execute, :phase, :start], start_time, %{id: id, phase: phase})
+
+    {elapsed, phase_result} = :timer.tc(phase, :run, [input, options])
+
+    :telemetry.execute([:absinthe, :execute, :phase, :stop], elapsed, %{id: id, phase: phase})
+
+    case phase_result do
       {:ok, result} ->
         run_phase(todo, result, [phase | done])
 
