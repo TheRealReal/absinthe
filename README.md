@@ -1,5 +1,10 @@
 # Absinthe
 
+This repository has been archived.
+
+📚 Archived Status:
+This repository is no longer actively maintained or updated. It is being preserved for historical reference or potential future use. Issues, pull requests, and contributions are no longer accepted.
+
 [GraphQL](https://facebook.github.io/graphql/) implementation for Elixir.
 
 [![Hex pm](http://img.shields.io/hexpm/v/absinthe.svg?style=flat)](https://hex.pm/packages/absinthe)[![Build Status](https://secure.travis-ci.org/absinthe-graphql/absinthe.svg?branch=master
